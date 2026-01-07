@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+          rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            min-height: 100vh;
+        }
+
+        .dashboard-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .btn-add {
+            background: linear-gradient(to right, #43cea2, #185a9d);
+            border: none;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+        }
+
+        table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f5ff;
+            transition: 0.3s;
+        }
+
+        .badge-food { background-color: #ff7675; }
+        .badge-travel { background-color: #74b9ff; }
+        .badge-shopping { background-color: #55efc4; }
+        .badge-other { background-color: #a29bfe; }
+
+        .amount {
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .action-icon {
+            font-size: 18px;
+            cursor: pointer;
+            margin-right: 12px;
+            color: #2c3e50;
+        }
+
+        .action-icon:hover {
+            color: #000;
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container py-5">
+    <div class="dashboard-card">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="title">💰 Expense Dashboard</h3>
+            <a href="/add" class="btn btn-add">+ Add Expense</a>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Payment</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="expense : ${expenses}">
+
+                    <td class="amount">
+                        ₹ <span th:text="${expense.amount}"></span>
+                    </td>
+
+                    <td>
+                        <span class="badge badge-food"
+                              th:if="${expense.category == 'Food'}">Food</span>
+
+                        <span class="badge badge-travel"
+                              th:if="${expense.category == 'Travel'}">Travel</span>
+
+                        <span class="badge badge-shopping"
+                              th:if="${expense.category == 'Shopping'}">Shopping</span>
+
+                        <span class="badge badge-other"
+                              th:if="${expense.category != 'Food'
+                                      and expense.category != 'Travel'
+                                      and expense.category != 'Shopping'}"
+                              th:text="${expense.category}">
+                        </span>
+                    </td>
+
+                    <td th:text="${expense.paymentMethod}"></td>
+                    <td th:text="${expense.description}"></td>
+
+                    <td>
+                        <!-- EDIT ICON -->
+                        <i class="bi bi-pencil-square action-icon"
+                           data-bs-toggle="modal"
+                           data-bs-target="#editModal"
+                           th:attr="
+                             data-id=${expense.id},
+                             data-amount=${expense.amount},
+                             data-category=${expense.category},
+                             data-payment=${expense.paymentMethod},
+                             data-description=${expense.description}">
+                        </i>
+
+                        <!-- DELETE ICON -->
+                        <i class="bi bi-trash action-icon"
+                           data-bs-toggle="modal"
+                           data-bs-target="#deleteModal"
+                           th:attr="onclick=|setDeleteAction('/expenses/delete/${expense.id}')|">
+                        </i>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-text">
+        Built with ❤️
+    </div>
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <form method="post" id="editForm">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">✏️ Edit Expense</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" step="0.01"
+                               class="form-control"
+                               id="edit-amount"
+                               name="amount" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select"
+                                id="edit-category"
+                                name="category" required>
+                            <option value="Food">Food</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select"
+                                id="edit-payment"
+                                name="paymentMethod" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Card">Card</option>
+                            <option value="UPI">UPI</option>
+                            <option value="NetBanking">Net Banking</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control"
+                                  id="edit-description"
+                                  name="description"
+                                  rows="3"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= DELETE MODAL ================= -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body text-center">
+                <p>Are you sure you want to delete this expense?</p>
+                <form id="deleteForm" method="post">
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const editModal = document.getElementById('editModal');
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+
+        const id = btn.getAttribute('data-id');
+
+        document.getElementById('edit-amount').value = btn.getAttribute('data-amount');
+        document.getElementById('edit-category').value = btn.getAttribute('data-category');
+        document.getElementById('edit-payment').value = btn.getAttribute('data-payment');
+        document.getElementById('edit-description').value = btn.getAttribute('data-description');
+
+        document.getElementById('editForm').action = '/expenses/edit/' + id;
+    });
+
+    function setDeleteAction(url) {
+        document.getElementById("deleteForm").action = url;
+    }
+</script>
+
+</body>
+</html>

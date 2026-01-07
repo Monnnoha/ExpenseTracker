@@ -11,7 +11,9 @@ The **Expense Tracker** allows users to:
 - Delete expenses when not needed
 - Manage expenses using a clean and colorful UI
 
-While i'm building this project i got small practice on Spring MVC, Crud operations, @RestAPI's...
+While i'm building this project i got small practice on Spring MVC, Crud operations.
+
+
 Features
 
   Add new expenses (amount, category, description, date)

@@ -1,6 +1,3 @@
-
-![Uploading image.png…]()
-
 A simple **Expense Tracker Web Application** built using **Spring Boot**, **Thymeleaf**, and **MySQL**.  
 This project helps users **add, view, and delete expenses** in an easy and organized way.
 

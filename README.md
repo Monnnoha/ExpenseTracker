@@ -1,4 +1,4 @@
-# Expense Tracker Application 💰
+<img width="1891" height="1018" alt="image" src="https://github.com/user-attachments/assets/a19f8a19-562c-4116-8df3-9d1b34cd1e67" /># Expense Tracker Application 💰
 
 A simple **Expense Tracker Web Application** built using **Spring Boot**, **Thymeleaf**, and **MySQL**.  
 This project helps users **add, view, and delete expenses** in an easy and organized way.
